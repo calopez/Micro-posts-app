@@ -3,25 +3,25 @@ require 'spec_helper'
 describe User do
 
   before do
-   @user = User.new(name: "Example User", email: "user@example.com",
-                    password: "foobar", password_confirmation: "foobar") 
- end
+    @user = User.new(name: "Example User", email: "user@example.com",
+                     password: "foobar", password_confirmation: "foobar")
+  end
 
   subject { @user }
 
   it { should respond_to(:name) }
   it { should respond_to(:email) }
-  it { should respond_to(:password_digest) }  
-  it { should respond_to(:password) }  
-  it { should respond_to(:password_confirmation) }   
-  it { should respond_to(:authenticate) }   
+  it { should respond_to(:password_digest) }
+  it { should respond_to(:password) }
+  it { should respond_to(:password_confirmation) }
+  it { should respond_to(:authenticate) }
 
   it { should be_valid }
 
- # --------------------------------------
- # MAIL VALIDATIONS
- # --------------------------------------
- 
+  # --------------------------------------
+  # MAIL VALIDATIONS
+  # --------------------------------------
+
   describe "when name is not present" do
     before { @user.name = " " }
     it { should_not be_valid }
@@ -57,26 +57,37 @@ describe User do
     end
   end
 
-  describe "when email address is already taken" do 
+  describe "when email address is already taken" do
     before do
       user_with_same_email = @user.dup
-      user_with_same_email.email = @user.email.upcase      
+      user_with_same_email.email = @user.email.upcase
       user_with_same_email.save
     end
 
     it { should_not be_valid}
   end
 
- # --------------------------------------
- # PASSWORD VALIDATIONS
- # -------------------------------------- 
+  describe "email address with mixed case" do
+    let(:mixed_case_email) { 'KarLOslOPeZ@mE.CoM' }
+
+    it "should be save as all lower-case" do
+      @user.email = mixed_case_email
+      @user.save
+
+      expect(@user.reload.email).to eq mixed_case_email.downcase
+    end
+  end
+
+  # --------------------------------------
+  # PASSWORD VALIDATIONS
+  # --------------------------------------
 
   describe "when password is not pressent" do
-      before do
-       @user = User.new(name: "Example User", email: "user@example.com",
-                        password: " ", password_confirmation: " ") 
-      end   
-      it { should_not be_valid } 
+    before do
+      @user = User.new(name: "Example User", email: "user@example.com",
+                       password: " ", password_confirmation: " ")
+    end
+    it { should_not be_valid }
   end
 
   describe "when password doesn't match confirmation" do
@@ -84,18 +95,18 @@ describe User do
     it { should_not be_valid }
   end
 
- # --------------------------------------
- # AUTHENTICATION
- # -------------------------------------- 
- 
- describe "with a password that's too short" do
-  before { @user.password = @user.password_confirmation * 5 }
-  it {should be_invalid}
- end  
- 
- describe "return value of authenticate method" do
-  before { @user.save }
-  let(:found_user) { User.find_by_email(@user.email) }
+  # --------------------------------------
+  # AUTHENTICATION
+  # --------------------------------------
+
+  describe "with a password that's too short" do
+    before { @user.password = @user.password_confirmation * 5 }
+    it {should be_invalid}
+  end
+
+  describe "return value of authenticate method" do
+    before { @user.save }
+    let(:found_user) { User.find_by_email(@user.email) }
 
     describe "with valid password" do
       it { should eq found_user.authenticate(@user.password) }
@@ -106,30 +117,7 @@ describe User do
 
       it { should_not eq user_for_invalid_password }
       specify { expect(user_for_invalid_password).to be_false }
-    end    
- end
+    end
+  end
 
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
