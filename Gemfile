@@ -6,6 +6,9 @@ gem 'rails', '4.0.4'
 gem 'bootstrap-sass', '~> 3.1.1.1'
 gem 'sprockets', '~> 2.11.0'
 gem 'bcrypt', '~> 3.1'
+gem 'faker', '~> 1.3.0'
+gem 'will_paginate', '~> 3.0.5'
+gem 'bootstrap-will_paginate', '~> 0.0.10'
 
 group :development, :test do
   gem 'sqlite3', '1.3.8'
